@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BULSU Meneses — School Clinic Monitoring</title>
+  
+  <style>
+    :root {
+      --black: #000000;
+      --dark-gray: #333333;
+      --mid-gray: #888888;
+      --light-gray: #e0e0e0;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: monospace, "Courier New", Courier, sans-serif; 
+    }
+
+    body {
+      background-color: var(--white);
+      color: var(--black);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      background-color: var(--white);
+      color: var(--black);
+      border-bottom: 2px solid var(--black);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-logo-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .clinic-logo {
+      width: 40px;
+      height: 40px;
+      background-color: var(--light-gray);
+      border: 1px solid var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      object-fit: none;
+    }
+
+    .header-titles h1 {
+      font-size: 18px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .header-titles p {
+      font-size: 12px;
+      color: var(--dark-gray);
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-link {
+      color: var(--black);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+      border-bottom: 1px dashed transparent;
+    }
+
+    .nav-link:hover {
+      border-bottom: 1px dashed var(--black);
+    }
+
+    /* MAIN CONTENT */
+    main {
+      max-width: 1000px;
+      width: 100%;
+      margin: 24px auto;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      flex: 1;
+    }
+
+    /* METRICS ROW */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .metric-card {
+      background: var(--white);
+      border: 2px solid var(--black);
+      padding: 16px;
+    }
+
+    .metric-card h2 {
+      font-size: 14px;
+      border-bottom: 1px solid var(--black);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .metric-number {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .metric-desc {
+      font-size: 12px;
+      color: var(--dark-gray);
+      line-height: 1.4;
+    }
+
+    /* PANELS */
+    .panel {
+      background: var(--white);
+      border: 2px solid var(--black);
+      padding: 20px;
+    }
+
+    .panel h2 {
+      font-size: 16px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      border-bottom: 2px solid var(--black);
+      padding-bottom: 8px;
+      display: inline-block;
+      width: 100%;
+    }
+
+    /* FORMS */
+    .inline-form {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 12px;
+      background-color: var(--light-gray);
+      border: 1px solid var(--black);
+    }
+
+    .inline-form input, .inline-form select {
+      flex: 1;
+      padding: 8px;
+      font-size: 12px;
+      border: 1px solid var(--black);
+      background: var(--white);
+      outline: none;
+      border-radius: 0; 
+    }
+
+    .inline-form button {
+      background-color: var(--black);
+      color: var(--white);
+      border: 1px solid var(--black);
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+
+    .inline-form button:hover {
+      background-color: var(--white);
+      color: var(--black);
+    }
+
+    /* TABLES */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid var(--mid-gray);
+      text-align: left;
+    }
+
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    /* B&W BADGES */
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      text-align: center;
+      min-width: 85px;
+    }
+    .badge-treated { border: 1px solid var(--black); background: var(--white); color: var(--black); }
+    .badge-observing { border: 1px dashed var(--black); background: var(--light-gray); color: var(--black); }
+    .badge-referred { background: var(--black); color: var(--white); border: 1px solid var(--black); }
+
+    .supply-alert-text { font-weight: bold; text-decoration: underline; }
+    
+    .supply-status { font-weight: bold; }
+    .supply-low { color: var(--black); border: 1px solid var(--black); padding: 2px 6px; }
+    .supply-ok { color: var(--mid-gray); }
+
+    /* BED GRID */
+    .bed-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .bed-card {
+      border: 1px solid var(--black);
+      padding: 16px;
+      text-align: center;
+      background-color: var(--white);
+    }
+
+    .bed-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .bed-label { font-size: 14px; font-weight: bold; margin-bottom: 4px; }
+    .bed-state { font-size: 11px; text-transform: uppercase; }
+
+    /* FOOTER */
+    footer {
+      border-top: 2px solid var(--black);
+      background-color: var(--white);
+      color: var(--black);
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      margin-top: 40px;
+    }
+
+    .btn-launch {
+      display: inline-block;
+      margin-top: 12px;
+      background: var(--black);
+      color: var(--white);
+      padding: 8px 16px;
+      text-decoration: none;
+      font-weight: bold;
+      text-transform: uppercase;
+      border: 1px solid var(--black);
+    }
+
+    .btn-launch:hover {
+      background: var(--white);
+      color: var(--black);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo-container">
+    <div class="clinic-logo">[LOGO]</div>
+    <div class="header-titles">
+      <h1>BULSU Meneses</h1>
+      <p>School Clinic Monitoring Dashboard</p>
+    </div>
+  </div>
+
+  <nav>
+    <a href="#metrics" class="nav-link">Dashboard</a>
+    <a href="#logbook" class="nav-link">Logbook</a>
+    <a href="#beds" class="nav-link">Clinic Beds</a>
+    <a href="#supplies" class="nav-link">Supplies</a>
+  </nav>
+</header>
+
+<main>
+  <section id="metrics" class="metrics-row">
+    <article class="metric-card card-logbook">
+      <h2>[ Today's Logbook ]</h2>
+      <p class="metric-number" id="logbookCount">--</p>
+      <p class="metric-desc">Total student patients logged today including walk-ins and referrals from the PE department.</p>
+    </article>
+
+    <article class="metric-card card-beds">
+      <h2>[ Available Clinic Beds ]</h2>
+      <p class="metric-number" id="bedCount">--</p>
+      <p class="metric-desc">Beds currently open for student use.</p>
+    </article>
+
+    <article class="metric-card card-supplies">
+      <h2>[ First-Aid Supplies ]</h2>
+      <p class="metric-number supply-alert-text" id="supplyAlert">--</p>
+      <p class="metric-desc">Items flagged as low stock or nearing expiration that require immediate restocking.</p>
+    </article>
+  </section>
+
+  <section id="logbook" class="panel">
+    <h2>Recent Logbook Entries</h2>
+    <form id="logbookForm" class="inline-form" onsubmit="event.preventDefault();">
+      <input type="text" id="patientName" placeholder="Student Name" required>
+      <input type="text" id="complaint" placeholder="Complaint (e.g., Fever)" required>
+      <input type="text" id="treatment" placeholder="Treatment Given" required>
+      <select id="logStatus">
+        <option value="Treated">Treated</option>
+        <option value="Observing">Observing</option>
+        <option value="Referred">Referred</option>
+      </select>
+      <button type="submit">+ ADD ENTRY</button>
+    </form>
+    <div id="logbookList" class="entry-list"></div>
+  </section>
+
+  <section id="beds" class="panel">
+    <h2>Clinic Bed Status</h2>
+    <form id="bedForm" class="inline-form" onsubmit="event.preventDefault();">
+      <input type="text" id="bedLabel" placeholder="Bed Label (e.g., Bed 6)" required>
+      <select id="bedStatus">
+        <option value="Available">Available</option>
+        <option value="Occupied">Occupied</option>
+        <option value="Maintenance">Maintenance</option>
+      </select>
+      <button type="submit">+ ADD BED</button>
+    </form>
+    <div id="bedGrid" class="bed-grid"></div>
+  </section>
+
+  <section id="supplies" class="panel">
+    <h2>First-Aid Supply Inventory</h2>
+    <form id="supplyForm" class="inline-form" onsubmit="event.preventDefault();">
+      <input type="text" id="itemName" placeholder="Item Name" required>
+      <input type="number" id="itemQty" placeholder="Qty" min="0" required style="max-width: 80px;">
+      <input type="text" id="itemCategory" placeholder="Category (e.g., Bandage)" required>
+      <button type="submit">+ ADD SUPPLY</button>
+    </form>
+    <div id="supplyTable" class="supply-table"></div>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2026 BULSU Meneses Campus Clinic &mdash; Emergency Hotline: 911</p>
+  <a href="#" class="btn-launch" onclick="alert('Wireframe Mode Active');">OPEN DASHBOARD WIREFRAME</a>
+</footer>
+
+<script>
+  const logbookData = [
+    { name: "Rowel Mesa", info: "Fainting after flag ceremony (Rest, oral rehydration)", status: "Observing" },
+    { name: "Marco Paraiso", info: "Eye irritation (Eye wash with saline solution)", status: "Treated" },
+    { name: "JV Pingol", info: "Toothache (Pain reliever, advised dental visit)", status: "Treated" },
+    { name: "John Michael Galman", info: "Asthma attack (Inhaler administered, monitored)", status: "Referred" },
+    { name: "Jacob Andres", info: "Nosebleed (Pinched nose, cold compress applied)", status: "Treated" }
+  ];
+
+  const bedData = [
+    { label: "Bed 1", status: "Available" },
+    { label: "Bed 2", status: "Occupied" },
+    { label: "Bed 3", status: "Available" },
+    { label: "Bed 4", status: "Occupied" },
+    { label: "Bed 5", status: "Available" },
+    { label: "Bed 6", status: "Maintenance" },
+    { label: "Bed 7", status: "Available" },
+    { label: "Bed 8", status: "Occupied" }
+  ];
+
+  const supplyData = [
+    { name: "Blood Pressure Monitor (Equipment)", qty: 2 },
+    { name: "Saline Solution (Antiseptic)", qty: 3 },
+    { name: "Thermometer (Equipment)", qty: 5 },
+    { name: "Alcohol 70% (500ml)", qty: 12 },
+    { name: "Gauze Pads (Bandage)", qty: 30 },
+    { name: "Paracetamol 500mg (Medicine)", qty: 200 }
+  ];
+
+  function renderLogbook() {
+    let html = '<table><tbody>';
+    logbookData.forEach(entry => {
+      const badgeClass = `badge badge-${entry.status.toLowerCase()}`;
+      html += `
+        <tr>
+          <td><strong>${entry.name}</strong><br><span style="color:#555">${entry.info}</span></td>
+          <td style="text-align: right; vertical-align: middle;">
+            <span class="${badgeClass}">${entry.status}</span>
+          </td>
+        </tr>
+      `;
+    });
+    html += '</tbody></table>';
+    document.getElementById('logbookList').innerHTML = html;
+    document.getElementById('logbookCount').innerText = logbookData.length;
+  }
+
+  function renderBeds() {
+    let html = '';
+    let availableCount = 0;
+    
+    bedData.forEach(bed => {
+      if (bed.status === 'Available') availableCount++;
+      
+      // Black and white bed symbols
+      let icon = "[ ]"; 
+      if(bed.status === "Occupied") icon = "[X]";
+      if(bed.status === "Maintenance") icon = "[-]";
+
+      html += `
+        <div class="bed-card">
+          <div class="bed-icon">${icon}</div>
+          <div class="bed-label">${bed.label}</div>
+          <div class="bed-state">${bed.status}</div>
+        </div>
+      `;
+    });
+    
+    document.getElementById('bedGrid').innerHTML = html;
+    document.getElementById('bedCount').innerText = `${availableCount} / ${bedData.length}`;
+  }
+
+  function renderSupplies() {
+    let html = '<table><tbody>';
+    let lowStockCount = 0;
+
+    supplyData.forEach(item => {
+      let statusHtml;
+      if (item.qty < 10) {
+        lowStockCount++;
+        statusHtml = '<span class="supply-status supply-low">! LOW</span>';
+      } else {
+        statusHtml = '<span class="supply-status supply-ok">OK</span>';
+      }
+
+      html += `
+        <tr>
+          <td>${item.name}</td>
+          <td style="text-align: right; width: 60px;">QTY: ${item.qty}</td>
+          <td style="text-align: right; width: 80px;">${statusHtml}</td>
+        </tr>
+      `;
+    });
+
+    html += '</tbody></table>';
+    document.getElementById('supplyTable').innerHTML = html;
+    document.getElementById('supplyAlert').innerText = `! ${lowStockCount} ITEMS`;
+  }
+
+  window.onload = function() {
+    renderLogbook();
+    renderBeds();
+    renderSupplies();
+  };
+</script>
+
+</body>
+</html>
